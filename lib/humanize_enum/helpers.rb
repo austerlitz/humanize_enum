@@ -12,7 +12,7 @@ module HumanizeEnum
       # @example
       #   Payment.humanize_enum(:status, :pending) # => 'Pending'
       def humanize_enum(enum_name, enum_value)
-        I18n.t("activerecord.attributes.#{self.class.model_name.i18n_key}.#{enum_name}/#{enum_value}")
+        I18n.t("activerecord.attributes.#{model_name.i18n_key}.#{enum_name}/#{enum_value}")
       end
 
       # @return [Hash<String, String>] hash where key is enum name and value is its translation
