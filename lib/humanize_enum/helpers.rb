@@ -37,6 +37,7 @@ module HumanizeEnum
         end
       end
     end
+
     # @return [String] translated enum value of an instance
     # @example
     #   payment = Payment.new
@@ -46,13 +47,15 @@ module HumanizeEnum
       I18n.t("activerecord.attributes.#{model_name.i18n_key}.#{enum_name}/#{self[enum_name]}")
     end
 
+    # @see .humanize_enums
+    def humanize_enums(enum_name)
+      self.class.humanize_enums(enum_name)
+    end
+
     # @return [Array<SelectOption>]
     # @see .enum_options
     def enum_options(enum_name)
-      enum_i18n_key = enum_name.to_s.pluralize
-      self.class.send(enum_i18n_key).map do |key, val|
-        SelectOption.new(val, key, self.class.humanize_enum(enum_name, key), key == self[enum_name])
-      end
+      self.class.enum_options(enum_name)
     end
   end
 end
