@@ -8,7 +8,7 @@ require 'active_support/lazy_load_hooks'
 module HumanizeEnum
   if defined?(ActiveSupport.on_load)
     ActiveSupport.on_load(:active_record) do
-      self.include Helpers
+      self.include HumanizeEnum::Helpers
     end
   end
 end
