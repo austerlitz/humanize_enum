@@ -5,6 +5,10 @@ require_relative 'humanize_enum/helpers'
 require 'active_support/lazy_load_hooks'
 
 module HumanizeEnum
+
+  # Error for an unknown enum key
+  UnknownEnumKey = Class.new(StandardError)
+
   if defined?(ActiveSupport.on_load)
     ActiveSupport.on_load(:active_record) do
       include HumanizeEnum::Helpers
