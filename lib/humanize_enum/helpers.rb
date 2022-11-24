@@ -58,7 +58,7 @@ module HumanizeEnum
     #   payment.humanize_enum(:status) # => 'Initial'
     def humanize_enum(enum_name)
       self.class.check_enum!(enum_name)
-      I18n.t("activerecord.attributes.#{self.class.model_name.i18n_key}.#{enum_name}/#{self[enum_name]}")
+      I18n.t("activerecord.attributes.#{self.class.model_name.i18n_key}.#{enum_name}/#{send(enum_name)}")
     end
 
     # @see .humanize_enums
