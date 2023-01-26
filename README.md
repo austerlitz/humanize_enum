@@ -53,13 +53,22 @@ Payment.humanize_enums(:status)
 payment.humanize_enums(:status)  
 # both will return
 # {
-#   initial: 'Initial status', 
-#   paid:    'Payment processed', 
-#   error:   'Payment error'
+#   "initial" => "Initial status", 
+#      "paid" => "Payment processed", 
+#     "error" => "Payment error"
 # }
 
 
 
+```
+
+Or if the incoming data is a text label, get its enum_value:
+```ruby
+str = 'Payment error'
+Payment.dehumanize_enum(:status, str) # => "error"
+
+# or nil if the label does not correspond to a translation:
+Payment.dehumanize_enum(:status, 'blah') # => nil 
 ```
 
 ## Inspired by
