@@ -84,9 +84,9 @@ Payment.dehumanize_enum(:status, 'blah') # => nil
 - [translate_enum](https://github.com/shlima/translate_enum)
 
 ## TODO
-- check input parameters for presence in enums
-- add some specs?
-- maybe some justification on why on earth make yet another gem on enum i18n  
+- [x] check input parameters for presence in enums
+- [x] add some specs?
+- [ ] maybe some justification on why on earth make yet another gem on enum i18n  
 
 ## Development
 
