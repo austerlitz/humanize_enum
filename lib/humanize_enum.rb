@@ -3,6 +3,7 @@
 require_relative 'humanize_enum/version'
 require_relative 'humanize_enum/helpers'
 require 'active_support/lazy_load_hooks'
+require 'active_support/inflector'
 
 module HumanizeEnum
 
