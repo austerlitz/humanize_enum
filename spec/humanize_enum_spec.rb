@@ -118,7 +118,7 @@ RSpec.describe HumanizeEnum do
   describe '.enum_options' do
     it 'returns an array of SelectOption structs' do
       options = Payment.enum_options(:status)
-      expect(options).to all(be_an(HumanizeEnum::EnumTranslation::SelectOption))
+      expect(options).to all(be_an(HumanizeEnum::SelectOption))
     end
 
     it 'contains the correct id, value, text, and checked attributes for each SelectOption' do
