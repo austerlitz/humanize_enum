@@ -49,7 +49,7 @@ module HumanizeEnum
     # @param enum_name [String, Symbol]
     # @raise [UnknownEnumKey] if enum_name is not a defined enum
     def check_enum!(enum_name)
-      raise UnknownEnumKey unless defined_enums.keys.include?(enum_name.to_s)
+      raise UnknownEnumKey unless defined_enums.has_key?(enum_name.to_s)
     end
   end
 end
