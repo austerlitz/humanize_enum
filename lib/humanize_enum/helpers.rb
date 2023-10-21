@@ -40,7 +40,7 @@ module HumanizeEnum
       # @param enum_text [String] text value of the enum
       # @return [Integer, String, NilClass]
       def dehumanize_enum(enum_name, enum_text)
-        humanize_enums(enum_name).invert[enum_text]
+        humanize_enums(enum_name).key(enum_text)&.underscore
       end
 
       # @param enum_name [String, Symbol] enum key to be translated

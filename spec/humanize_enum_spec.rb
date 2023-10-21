@@ -6,7 +6,7 @@ require 'ostruct'
 
 # Set up I18n configuration
 I18n.available_locales = [:en]
-I18n.default_locale = :en
+I18n.default_locale    = :en
 
 RSpec.describe HumanizeEnum do
   class Payment
@@ -25,10 +25,8 @@ RSpec.describe HumanizeEnum do
       {
         'status' => {
           'initial' => 1,
-          'paid' => 2,
-          'error' => 3,
-          'InitialStatus' => 4,
-          'Initial-Status' => 5
+          'paid'    => 2,
+          'error'   => 3,
         }
       }
     end
@@ -38,15 +36,45 @@ RSpec.describe HumanizeEnum do
     end
   end
 
-  # Set up translations for the Payment class
+  class SpecialPayment
+    include HumanizeEnum::Helpers
+    attr_accessor :status
+
+    def self.model_name
+      OpenStruct.new(i18n_key: 'special_payment')
+    end
+
+    def initialize(status = nil)
+      @status = status
+    end
+
+    def self.defined_enums
+      {
+        'status' => {
+          'Module::Status'  => 3,
+          'CamelStatus'  => 4,
+          'Kebab-Status' => 5
+        }
+      }
+    end
+
+    def self.statuses
+      defined_enums['status']
+    end
+  end
+
+  # Set up translations
   I18n.backend.store_translations(:en, activerecord: {
     attributes: {
-      payment: {
+      payment:         {
         'status/initial': 'Initial status',
-        'status/paid': 'Payment processed',
-        'status/error': 'Payment error',
-        'status/initial/status': 'Initial status',  # For camel-cased enum values
-        'status/initial_status': 'Initial status'   # For enum values with special characters
+        'status/paid':    'Payment processed',
+        'status/error':   'Payment error',
+      },
+      special_payment: {
+        'status/module/status': 'Module status',
+        'status/camel_status': 'Camel status',
+        'status/kebab_status': 'Kebab status'
       }
     }
   })
@@ -72,8 +100,8 @@ RSpec.describe HumanizeEnum do
     it 'returns a hash of enum values and their translations' do
       expect(Payment.humanize_enums(:status)).to eq({
                                                       'initial' => 'Initial status',
-                                                      'paid' => 'Payment processed',
-                                                      'error' => 'Payment error'
+                                                      'paid'    => 'Payment processed',
+                                                      'error'   => 'Payment error'
                                                     })
     end
   end
@@ -127,25 +155,44 @@ RSpec.describe HumanizeEnum do
 
   describe '.humanize_enum with special enum values' do
     it 'handles camel-cased enum values' do
-      expect(Payment.humanize_enum(:status, :InitialStatus)).to eq('Initial status')
+      expect(SpecialPayment.humanize_enum(:status, :'CamelStatus')).to eq('Camel status')
+    end
+    it 'handles Module::Status enum values' do
+      expect(SpecialPayment.humanize_enum(:status, :'Module::Status')).to eq('Module status')
     end
 
     it 'handles enum values with special characters' do
-      expect(Payment.humanize_enum(:status, :"Initial-Status")).to eq('Initial status')
+      expect(SpecialPayment.humanize_enum(:status, :'Kebab-Status')).to eq('Kebab status')
     end
   end
 
   describe '#humanize_enum instance method with special enum values' do
     it 'handles camel-cased enum values' do
-      payment = Payment.new('InitialStatus')
-      expect(payment.humanize_enum(:status)).to eq('Initial status')
+      payment = SpecialPayment.new('CamelStatus')
+      expect(payment.humanize_enum(:status)).to eq('Camel status')
+    end
+    it 'handles Module::Status enum values' do
+      payment = SpecialPayment.new('Module::Status')
+      expect(payment.humanize_enum(:status)).to eq('Module status')
     end
 
     it 'handles enum values with special characters' do
-      payment = Payment.new('Initial-Status')
-      expect(payment.humanize_enum(:status)).to eq('Initial status')
+      payment = SpecialPayment.new('Kebab-Status')
+      expect(payment.humanize_enum(:status)).to eq('Kebab status')
     end
   end
 
+  describe '.dehumanize_enum with special enum values' do
+    it 'handles camel-cased enum translations' do
+      expect(SpecialPayment.dehumanize_enum(:status, 'Camel status')).to eq('camel_status')
+    end
+    it 'handles Module::Status enum translations' do
+      expect(SpecialPayment.dehumanize_enum(:status, 'Module status')).to eq('module/status')
+    end
+
+    it 'handles enum translations with special characters' do
+      expect(SpecialPayment.dehumanize_enum(:status, 'Kebab status')).to eq('kebab_status')
+    end
+  end
 
 end
