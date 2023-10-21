@@ -26,7 +26,9 @@ RSpec.describe HumanizeEnum do
         'status' => {
           'initial' => 1,
           'paid' => 2,
-          'error' => 3
+          'error' => 3,
+          'InitialStatus' => 4,
+          'Initial-Status' => 5
         }
       }
     end
@@ -42,7 +44,9 @@ RSpec.describe HumanizeEnum do
       payment: {
         'status/initial': 'Initial status',
         'status/paid': 'Payment processed',
-        'status/error': 'Payment error'
+        'status/error': 'Payment error',
+        'status/initial/status': 'Initial status',  # For camel-cased enum values
+        'status/initial_status': 'Initial status'   # For enum values with special characters
       }
     }
   })
@@ -120,5 +124,28 @@ RSpec.describe HumanizeEnum do
       expect { payment.humanize_enum(:undefined_enum) }.to raise_error(HumanizeEnum::UnknownEnumKey)
     end
   end
+
+  describe '.humanize_enum with special enum values' do
+    it 'handles camel-cased enum values' do
+      expect(Payment.humanize_enum(:status, :InitialStatus)).to eq('Initial status')
+    end
+
+    it 'handles enum values with special characters' do
+      expect(Payment.humanize_enum(:status, :"Initial-Status")).to eq('Initial status')
+    end
+  end
+
+  describe '#humanize_enum instance method with special enum values' do
+    it 'handles camel-cased enum values' do
+      payment = Payment.new('InitialStatus')
+      expect(payment.humanize_enum(:status)).to eq('Initial status')
+    end
+
+    it 'handles enum values with special characters' do
+      payment = Payment.new('Initial-Status')
+      expect(payment.humanize_enum(:status)).to eq('Initial status')
+    end
+  end
+
 
 end

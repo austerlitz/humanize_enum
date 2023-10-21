@@ -16,7 +16,7 @@ module HumanizeEnum
       #   Payment.humanize_enum(:status, :pending) # => 'Pending'
       def humanize_enum(enum_name, enum_value)
         check_enum!(enum_name)
-        I18n.t("activerecord.attributes.#{model_name.i18n_key}.#{enum_name}/#{enum_value}")
+        I18n.t("activerecord.attributes.#{model_name.i18n_key}.#{enum_name}/#{enum_value.to_s.underscore}")
       end
 
       # @return [Hash<String, String>] hash where key is enum name and value is its translation
@@ -68,7 +68,7 @@ module HumanizeEnum
     #   payment.humanize_enum(:status) # => 'Initial'
     def humanize_enum(enum_name)
       self.class.check_enum!(enum_name)
-      I18n.t("activerecord.attributes.#{self.class.model_name.i18n_key}.#{enum_name}/#{send(enum_name)}")
+      I18n.t("activerecord.attributes.#{self.class.model_name.i18n_key}.#{enum_name}/#{send(enum_name).to_s.underscore}")
     end
 
     # @see .humanize_enums
