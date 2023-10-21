@@ -62,7 +62,10 @@ payment.humanize_enums(:status)
 
 ```
 
-Or if the incoming data is a text label, get its enum_value:
+### Dehumanize Enum Values
+
+The `dehumanize_enum` method lets you find an enum key based on its human-readable form:
+
 ```ruby
 str = 'Payment error'
 Payment.dehumanize_enum(:status, str) # => "error"
@@ -70,6 +73,83 @@ Payment.dehumanize_enum(:status, str) # => "error"
 # or nil if the label does not correspond to a translation:
 Payment.dehumanize_enum(:status, 'blah') # => nil 
 ```
+
+### Advanced Usage
+
+#### Translating Enums and Polymorphic Associations
+
+This gem isn't just for enums; you can also use it to translate polymorphic association types. Here's how you can do it:
+
+Let's consider a model `Document` with an enum field `status` and a polymorphic association called `documentable`:
+
+```ruby
+class Document < ApplicationRecord
+  enum status: { draft: 0, published: 1, archived: 2 }
+  belongs_to :documentable, polymorphic: true
+end
+```
+
+And we have various models that include a concern `Documentable`:
+
+```ruby
+
+module Documentable
+  extend ActiveSupport::Concern
+  included do
+    has_many :documents, as: :documentable
+  end
+end
+
+class Article < ApplicationRecord
+  include Documentable
+end
+
+class Report < ApplicationRecord
+  include Documentable
+end
+```
+
+In your locale files, you can set translations for both the enum `status` and the polymorphic association type `documentable_type`:
+
+```yaml
+en:
+  activerecord:
+    attributes:
+      document:
+        status: "Status"
+        status/draft: "Draft"
+        status/published: "Published"
+        status/archived: "Archived"
+        documentable_type: "Type"
+        documentable_type/article: "Article"
+        documentable_type/report: "Report"
+```
+
+Now you can use `humanize_enum` to get these translations:
+
+```ruby
+document = Document.last
+document.status # => :published
+document.humanize_enum(:status) # => 'Published'
+
+document.documentable_type # => 'Article'
+document.humanize_enum(:documentable_type) # => 'Article'
+```
+
+And to query a translation for a specific value:
+
+```ruby
+Document.humanize_enum(:status, :archived) # => 'Archived'
+Document.humanize_enum(:documentable_type, :article) # => 'Article'
+```
+
+To get the actual enum or polymorphic type from a human-readable string:
+
+```ruby
+Document.dehumanize_enum(:status, 'Published') # => :published
+Document.dehumanize_enum(:documentable_type, 'Article') # => :article
+```
+
 
 ## Inspired by
 
@@ -83,10 +163,22 @@ Payment.dehumanize_enum(:status, 'blah') # => nil
 - [ar_enum_i18n](https://github.com/dalpo/ar_enum_i18n)
 - [translate_enum](https://github.com/shlima/translate_enum)
 
-## TODO
-- [x] check input parameters for presence in enums
-- [x] add some specs?
-- [ ] maybe some justification on why on earth make yet another gem on enum i18n  
+## Why Another Gem for Enum I18n?
+
+You might be wondering, "Why create another gem for internationalizing enums when there are already alternatives?"
+
+Here are some reasons why `humanize_enum` might be the right choice for you:
+
+1. **Not Just for Enums**: Yeah, it's called `humanize_enum`, but you can totally use it for polymorphic associations too. Neat, right?
+
+2. **Fast and Light**: We've trimmed the fat to make sure this gem runs smoothly, without slowing down your app.
+
+3. **No Rocket Science**: Simple to get, simple to use. You don't need a Ph.D. to figure it out.
+
+4. **Clean and Familiar Structure**: We keep your locale keys neat and tidy, like `status/paid`, and it's kinda similar to what you see in other gems like AASM. So, less headache for you.
+
+
+
 
 ## Development
 
