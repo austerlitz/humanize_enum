@@ -10,7 +10,7 @@ I18n.default_locale    = :en
 
 RSpec.describe HumanizeEnum do
   class Payment
-    include HumanizeEnum::Helpers
+    include HumanizeEnum::EnumTranslation
     attr_accessor :status
 
     def self.model_name
@@ -37,7 +37,7 @@ RSpec.describe HumanizeEnum do
   end
 
   class SpecialPayment
-    include HumanizeEnum::Helpers
+    include HumanizeEnum::EnumTranslation
     attr_accessor :status
 
     def self.model_name
@@ -118,7 +118,7 @@ RSpec.describe HumanizeEnum do
   describe '.enum_options' do
     it 'returns an array of SelectOption structs' do
       options = Payment.enum_options(:status)
-      expect(options).to all(be_an(HumanizeEnum::Helpers::SelectOption))
+      expect(options).to all(be_an(HumanizeEnum::EnumTranslation::SelectOption))
     end
 
     it 'contains the correct id, value, text, and checked attributes for each SelectOption' do

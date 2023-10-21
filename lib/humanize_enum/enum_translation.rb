@@ -1,5 +1,5 @@
 module HumanizeEnum
-  module Helpers
+  module EnumTranslation
     # Struct to be used in html selects and similar places
     SelectOption = Struct.new(:id, :value, :text, :checked)
 
